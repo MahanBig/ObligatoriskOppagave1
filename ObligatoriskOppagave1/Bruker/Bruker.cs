@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ObligatoriskOppagave1
+namespace ObligatoriskOppagave1.Bruker
 {
     internal abstract class Bruker
     {
-        public string Navn {  get; set; }
+        public string Navn { get; set; }
         public string Epost { get; set; }
         protected Bruker(string navn, string epost)
         {

@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ObligatoriskOppagave1
+namespace ObligatoriskOppagave1.Bruker
 {
     internal class Student : Bruker
     {
         public int StudentID { get; set; }
-        public Student(string navn, string epost)
+        public Student(int id, string navn, string epost)
             : base(navn,epost)
         {
-
+            StudentID = id;
         }
 
     }
