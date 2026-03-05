@@ -7,15 +7,20 @@ namespace ObligatoriskOppagave1.Bibliotek
 {
     internal class Lån
     {
-        public BrukerClass Låner {  get; set; }
+        public Student Låner {  get; set; }
         public Bok Bok { get; set; }
         public DateTime UtlånsDato { get; set; }
+        public DateTime? InnleveringsDato { get; set; }
 
-        public Lån(BrukerClass låner, Bok bok)
+        public Lån(Student låner, Bok bok)
         {
             Låner = låner;
             Bok = bok;
             UtlånsDato = DateTime.Now;
+        }
+        public bool ErAktiv()
+        {
+            return InnleveringsDato == null;
         }
 
     }
