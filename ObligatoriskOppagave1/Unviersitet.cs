@@ -82,6 +82,25 @@ namespace ObligatoriskOppagave1
             Console.WriteLine($"boken {tittel} har blitt registrert");
         }
 
+        public void VisAktiveLån()
+        {
+            var aktiveLån = from lån in Lån
+                            where lån.ErAktiv() == true
+                            select lån;
+            foreach (Lån item in aktiveLån)
+            {
+                Console.WriteLine($"Aktivt lån fra {item.Låner.Navn} av boken {item.Bok.Tittel}");
+            }
+
+        }
+        public void VisLåneHistorikk()
+        {
+            foreach (Lån item in Lån)
+            {
+                Console.WriteLine(item.ToString());
+            }
+        }
+
         public void LånBok(int studentId, int bokId)
         {
             var student = GetStudentFraListe(studentId);

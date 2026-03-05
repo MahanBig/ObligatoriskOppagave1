@@ -99,20 +99,24 @@ while (kjorer)
 
         case "6":
             Console.WriteLine("Student-ID (tall): ");
-            int laanStudentId; int.TryParse(Console.ReadLine(), out laanStudentId);
+            int laanStudentId;
+            int.TryParse(Console.ReadLine(), out laanStudentId);
 
             Console.WriteLine("Bok-ID (tall): ");
-            int laanBokId; int.TryParse(Console.ReadLine(), out laanBokId);
+            int laanBokId; 
+            int.TryParse(Console.ReadLine(), out laanBokId);
 
             uni.LånBok(laanStudentId, laanBokId);
             break;
 
         case "7":
             Console.WriteLine("Bok-ID (tall): ");
-            int returBokId; int.TryParse(Console.ReadLine(), out returBokId);
+            int returBokId;
+            int.TryParse(Console.ReadLine(), out returBokId);
 
             Console.WriteLine("Student-ID (tall): ");
-            int returStudentId; int.TryParse(Console.ReadLine(), out returStudentId);
+            int returStudentId; 
+            int.TryParse(Console.ReadLine(), out returStudentId);
 
             uni.ReturnerBok(returBokId, returStudentId);
             break;
