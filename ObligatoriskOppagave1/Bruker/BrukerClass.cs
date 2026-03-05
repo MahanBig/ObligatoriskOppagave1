@@ -4,11 +4,11 @@ using System.Text;
 
 namespace ObligatoriskOppagave1.Bruker
 {
-    internal abstract class Bruker
+    internal abstract class BrukerClass
     {
         public string Navn { get; set; }
         public string Epost { get; set; }
-        protected Bruker(string navn, string epost)
+        protected BrukerClass(string navn, string epost)
         {
             this.Navn = navn;
             this.Epost = epost;
