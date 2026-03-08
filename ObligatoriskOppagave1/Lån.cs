@@ -21,6 +21,10 @@ namespace ObligatoriskOppagave1
         {
             return InnleveringsDato == null;
         }
+        public void LeverBok()
+        {
+            InnleveringsDato = DateTime.Now;
+        }
 
     }
 }

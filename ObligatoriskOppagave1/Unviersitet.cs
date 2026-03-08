@@ -126,7 +126,7 @@ namespace ObligatoriskOppagave1
                            where lånet.Bok.Id == bokId && lånet.Låner.StudentID == studentId
                            select lånet).FirstOrDefault();
             if (aktivLån == null) { return; }
-            aktivLån.InnleveringsDato = DateTime.Now;
+            aktivLån.LeverBok();
             Console.WriteLine($"'{aktivLån.Bok.Tittel}' er nå levert tilbake.");
         }
     }
