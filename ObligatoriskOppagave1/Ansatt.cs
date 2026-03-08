@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ObligatoriskOppagave1.Bruker
+namespace ObligatoriskOppagave1
 {
-    internal class Ansatt : BrukerClass
+    internal class Ansatt : Bruker
     {
         public int AnsattID { get; set; }
         public string Stilling { get; set; }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ObligatoriskOppagave1.Bruker
+namespace ObligatoriskOppagave1
 {
     internal class Utvekslingsstudent : Student
     {

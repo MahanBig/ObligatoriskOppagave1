@@ -1,7 +1,4 @@
-﻿using ObligatoriskOppagave1.Bibliotek;
-using ObligatoriskOppagave1.Bruker;
-using ObligatoriskOppagave1.Kurs;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -11,9 +8,9 @@ namespace ObligatoriskOppagave1
     {
         // Lister
         public List<Student> Studenter { get; set; } = new List<Student>();
-        public List<KursClass> Kurs { get; set; } = new List<KursClass>();
+        public List<Kurs> Kurs { get; set; } = new List<Kurs>();
         public List<Bok> Bibliotek { get; set; } = new List<Bok>();
-        public List<Lån> Lån { get; set; } = new List<Lån>();
+        public List<Lån> LånHistorikk { get; set; } = new List<Lån>();
         public Unviersitet() {
             Studenter.Add(new Student(1, "Ola Nordmann", "ola@universitet.no"));
             Studenter.Add(new Student(2, "Kari Nordmann", "kari@universitet.no"));
@@ -28,7 +25,7 @@ namespace ObligatoriskOppagave1
                            select studenten).FirstOrDefault();
             return student;
         }
-        public KursClass? GetKursFraListe(string kursKode)
+        public Kurs? GetKursFraListe(string kursKode)
         {
             var kurs = (from kursen in Kurs
                         where kursen.KursKode == kursKode
@@ -46,7 +43,7 @@ namespace ObligatoriskOppagave1
         // Selve kjøttet på koden
         public void OprettKurs(string kode, string navn, int poeng, int maks)
         {
-            KursClass NyttKurs = new KursClass(kode,navn,poeng,maks);
+            Kurs NyttKurs = new Kurs(kode,navn,poeng,maks);
             Kurs.Add(NyttKurs);
             Console.WriteLine($"kurset {kode} har blitt regisrert");
         }
@@ -84,7 +81,7 @@ namespace ObligatoriskOppagave1
 
         public void VisAktiveLån()
         {
-            var aktiveLån = from lån in Lån
+            var aktiveLån = from lån in LånHistorikk
                             where lån.ErAktiv() == true
                             select lån;
             foreach (Lån item in aktiveLån)
@@ -95,7 +92,7 @@ namespace ObligatoriskOppagave1
         }
         public void VisLåneHistorikk()
         {
-            foreach (Lån item in Lån)
+            foreach (Lån item in LånHistorikk)
             {
                 Console.WriteLine(item.ToString());
             }
@@ -109,7 +106,7 @@ namespace ObligatoriskOppagave1
             if (student == null) { return; }
             if (bok == null) { return; }
 
-            int aktiveLånPåBok = (from lånet in Lån
+            int aktiveLånPåBok = (from lånet in LånHistorikk
                                   where lånet.Bok.Id == bok.Id && lånet.ErAktiv() == false
                                   select lånet).Count();
             if (aktiveLånPåBok >= bok.Antall)
@@ -119,13 +116,13 @@ namespace ObligatoriskOppagave1
             }
 
             Lån nyttLån = new Lån(student, bok);
-            Lån.Add(nyttLån);
+            LånHistorikk.Add(nyttLån);
 
             Console.WriteLine($"{student.Navn} lånte '{bok.Tittel}'.");
         }
         public void ReturnerBok(int bokId, int studentId)
         {
-            Lån? aktivLån = (from lånet in Lån
+            Lån? aktivLån = (from lånet in LånHistorikk
                            where lånet.Bok.Id == bokId && lånet.Låner.StudentID == studentId
                            select lånet).FirstOrDefault();
             if (aktivLån == null) { return; }

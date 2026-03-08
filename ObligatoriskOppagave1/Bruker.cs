@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ObligatoriskOppagave1.Bruker
+namespace ObligatoriskOppagave1
 {
-    internal abstract class BrukerClass
+    internal abstract class Bruker
     {
         public string Navn { get; set; }
         public string Epost { get; set; }
-        protected BrukerClass(string navn, string epost)
+        protected Bruker(string navn, string epost)
         {
             this.Navn = navn;
             this.Epost = epost;

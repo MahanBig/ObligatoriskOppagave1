@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ObligatoriskOppagave1.Bibliotek
+namespace ObligatoriskOppagave1
 {
     internal class Bok
     {

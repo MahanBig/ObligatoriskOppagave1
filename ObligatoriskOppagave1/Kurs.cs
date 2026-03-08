@@ -1,12 +1,11 @@
-﻿using ObligatoriskOppagave1.Bruker;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
-namespace ObligatoriskOppagave1.Kurs
+namespace ObligatoriskOppagave1
 {
-    internal class KursClass
+    internal class Kurs
     {
         public string KursNavn { get; set; }
         public string KursKode {  get; set; }
@@ -14,7 +13,7 @@ namespace ObligatoriskOppagave1.Kurs
         public int StudiePoeng { get; set; }
         public List<Student> Deltagere { get; set; } = new List<Student>();
 
-        public KursClass(string kode, string navn, int poeng, int maks)
+        public Kurs(string kode, string navn, int poeng, int maks)
         {
             KursNavn = navn;
             KursKode = kode;
