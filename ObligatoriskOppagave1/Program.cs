@@ -1,9 +1,9 @@
 ﻿using ObligatoriskOppagave1;
 
 Unviersitet uni = new Unviersitet();
-bool kjorer = true;
+bool kjører = true;
 
-while (kjorer)
+while (kjører)
 {
     Console.WriteLine("\n=== UNIVERSITETSSYSTEM ===");
     Console.WriteLine("[1] Opprett kurs");
@@ -23,20 +23,28 @@ while (kjorer)
     switch (valg)
     {
         case "1":
-            Console.WriteLine("Kurskode: "); 
+            Console.WriteLine("Kurskode: ");
             string? kode = Console.ReadLine();
-            Console.WriteLine("Kursnavn: "); 
+
+            Console.WriteLine("Kursnavn: ");
             string? navn = Console.ReadLine();
 
             Console.WriteLine("Studiepoeng (heltall): ");
-            int poeng;
-            int.TryParse(Console.ReadLine(), out poeng);
+            bool poengParsed = int.TryParse(Console.ReadLine(), out int poeng);
 
             Console.WriteLine("Maks antall plasser: ");
-            int maks;
-            int.TryParse(Console.ReadLine(), out maks);
+            bool maksParsed = int.TryParse(Console.ReadLine(), out int maks);
 
-            uni.OprettKurs(kode, navn, poeng, maks);
+            if (!string.IsNullOrWhiteSpace(kode) && !string.IsNullOrWhiteSpace(navn) && poengParsed && maksParsed)
+            {
+                uni.OprettKurs(kode, navn, poeng, maks);
+                Console.WriteLine("Kurs opprettet!");
+            }
+            else
+            {
+                Console.WriteLine("Feil: Vennligst fyll ut alle felt med gyldige verdier.");
+            }
+
             break;
 
         case "2":
@@ -45,7 +53,7 @@ while (kjorer)
             int.TryParse(Console.ReadLine(), out studentIdKurs);
 
             Console.WriteLine("Kurskode: ");
-            string? kursKode = Console.ReadLine();
+            string? kursKode = Console.ReadLine() ?? string.Empty;
 
             uni.MeldStudentPåKurs(studentIdKurs, kursKode);
             break;
@@ -70,26 +78,27 @@ while (kjorer)
 
         case "4":
             Console.WriteLine("Søk (kode eller navn): ");
-            string kursSok = Console.ReadLine().ToLower();
+            string kursSok = Console.ReadLine()?.ToLower() ?? string.Empty;
 
-            // Bruker LINQ for å søke i din liste
-            var kursTreff = uni.Kurs.Where(k =>
-                k.KursKode.ToLower().Contains(kursSok) ||
-                k.KursNavn.ToLower().Contains(kursSok));
+            var kursTreff = from kurs in uni.Kurs
+                            where kurs.KursKode.ToLower().Contains(kursSok) ||
+                                  kurs.KursNavn.ToLower().Contains(kursSok)
+                            select kurs;
 
-            foreach (var k in kursTreff)
+            foreach (var kurs in kursTreff)
             {
-                Console.WriteLine($"- {k.KursKode}: {k.KursNavn}");
+                Console.WriteLine($"- {kurs.KursKode}: {kurs.KursNavn}");
             }
             break;
 
         case "5":
             Console.WriteLine("Søk (tittel eller forfatter): ");
-            string bokSok = Console.ReadLine().ToLower();
+            string bokSok = Console.ReadLine()?.ToLower() ?? string.Empty;
 
-            var bokTreff = uni.Bibliotek.Where(b =>
-                b.Tittel.ToLower().Contains(bokSok) ||
-                b.Forfatter.ToLower().Contains(bokSok));
+            var bokTreff = from bok in uni.Bibliotek
+                           where bok.Tittel.ToLower().Contains(bokSok) ||
+                                 bok.Forfatter.ToLower().Contains(bokSok)
+                           select bok;
 
             foreach (var b in bokTreff)
             {
@@ -124,32 +133,31 @@ while (kjorer)
         case "8":
             Console.WriteLine("Bok-ID (tall): ");
             int nyBokId;
-            int.TryParse(Console.ReadLine(), out nyBokId);
+            int.TryParse(Console.ReadLine() ?? string.Empty, out nyBokId);
 
             Console.WriteLine("Tittel: ");
-            string? tittel = Console.ReadLine();
+            string? tittel = Console.ReadLine() ?? string.Empty;
             Console.WriteLine("Forfatter: ");
-            string? forfatter = Console.ReadLine();
+            string? forfatter = Console.ReadLine() ?? string.Empty;
 
             Console.WriteLine("År: ");
             int år; 
-            int.TryParse(Console.ReadLine(), out år);
+            int.TryParse(Console.ReadLine() ?? string.Empty, out år);
 
             Console.WriteLine("Antall eksemplarer: ");
             int antall;
-            int.TryParse(Console.ReadLine(), out antall);
+            int.TryParse(Console.ReadLine() ?? string.Empty, out antall);
 
             uni.RegistrerBok(nyBokId, tittel, forfatter, år, antall);
             break;
 
         case "0":
-            kjorer = false;
+            kjører = false;
             Console.WriteLine("Avslutter programmet...");
             break;
 
         default:
             Console.WriteLine("Ugyldig valg. Trykk et tall mellom 0 og 8.");
-            kjorer = false;
             break;
     }
 }

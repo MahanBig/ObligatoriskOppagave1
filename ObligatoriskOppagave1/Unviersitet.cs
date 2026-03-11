@@ -12,6 +12,7 @@ namespace ObligatoriskOppagave1
         public List<Bok> Bibliotek { get; set; } = new List<Bok>();
         public List<Lån> LånHistorikk { get; set; } = new List<Lån>();
         public Unviersitet() {
+            // litt test data
             Studenter.Add(new Student(1, "Ola Nordmann", "ola@universitet.no"));
             Studenter.Add(new Student(2, "Kari Nordmann", "kari@universitet.no"));
             Studenter.Add(new Student(3, "Per Post", "per@universitet.no"));
