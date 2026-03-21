@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
 namespace ObligatoriskOppagave1
@@ -8,7 +7,7 @@ namespace ObligatoriskOppagave1
     internal class Kurs
     {
         public string KursNavn { get; set; }
-        public string KursKode {  get; set; }
+        public string KursKode { get; set; }
         public int MaksAntallPlasser { get; set; }
         public int StudiePoeng { get; set; }
         public List<Student> Deltagere { get; set; } = new List<Student>();
@@ -20,6 +19,7 @@ namespace ObligatoriskOppagave1
             MaksAntallPlasser = maks;
             StudiePoeng = poeng;
         }
+
         public bool ErPlass()
         {
             return Deltagere.Count < MaksAntallPlasser;

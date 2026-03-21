@@ -17,8 +17,8 @@ namespace ObligatoriskOppagave1
             Id = id;
             Tittel = tittel;
             Forfatter = forfatter;
+            År = år; 
             Antall = antall;
-            
         }
     }
 }

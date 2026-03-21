@@ -6,25 +6,31 @@ namespace ObligatoriskOppagave1
 {
     internal class Lån
     {
-        public Student Låner {  get; set; }
+        public Bruker Låner { get; set; }
         public Bok Bok { get; set; }
         public DateTime UtlånsDato { get; set; }
         public DateTime? InnleveringsDato { get; set; }
 
-        public Lån(Student låner, Bok bok)
+        public Lån(Bruker låner, Bok bok)
         {
             Låner = låner;
             Bok = bok;
             UtlånsDato = DateTime.Now;
         }
+
         public bool ErAktiv()
         {
             return InnleveringsDato == null;
         }
+
         public void LeverBok()
         {
             InnleveringsDato = DateTime.Now;
         }
 
+        public override string ToString()
+        {
+            return $"Lån: {Bok.Tittel} utlånt til {Låner.Navn} (Aktivt: {ErAktiv()})";
+        }
     }
 }

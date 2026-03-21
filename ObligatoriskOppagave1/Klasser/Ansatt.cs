@@ -6,16 +6,15 @@ namespace ObligatoriskOppagave1
 {
     internal class Ansatt : Bruker
     {
-        public int AnsattID { get; set; }
+        public int AnsattID { get => Id; set => Id = value; }
         public string Stilling { get; set; }
         public string Avdeling { get; set; }
+
         public Ansatt(int id, string navn, string epost, string stilling, string avdeling)
-            : base(navn, epost)
+            : base(id, navn, epost)
         {
-            AnsattID = id;
             Stilling = stilling;
             Avdeling = avdeling;
         }
-
     }
 }

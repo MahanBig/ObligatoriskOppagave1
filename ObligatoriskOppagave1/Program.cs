@@ -15,7 +15,7 @@ while (kjører)
     Console.WriteLine("[7] Returner bok");
     Console.WriteLine("[8] Registrer bok");
     Console.WriteLine("[0] Avslutt");
-    Console.WriteLine("Velg en handling: ");
+    Console.Write("Velg en handling: ");
 
     string? valg = Console.ReadLine();
     Console.WriteLine();
@@ -23,36 +23,33 @@ while (kjører)
     switch (valg)
     {
         case "1":
-            Console.WriteLine("Kurskode: ");
+            Console.Write("Kurskode: ");
             string? kode = Console.ReadLine();
 
-            Console.WriteLine("Kursnavn: ");
+            Console.Write("Kursnavn: ");
             string? navn = Console.ReadLine();
 
-            Console.WriteLine("Studiepoeng (heltall): ");
+            Console.Write("Studiepoeng (heltall): ");
             bool poengParsed = int.TryParse(Console.ReadLine(), out int poeng);
 
-            Console.WriteLine("Maks antall plasser: ");
+            Console.Write("Maks antall plasser: ");
             bool maksParsed = int.TryParse(Console.ReadLine(), out int maks);
 
             if (!string.IsNullOrWhiteSpace(kode) && !string.IsNullOrWhiteSpace(navn) && poengParsed && maksParsed)
             {
                 uni.OprettKurs(kode, navn, poeng, maks);
-                Console.WriteLine("Kurs opprettet!");
             }
             else
             {
                 Console.WriteLine("Feil: Vennligst fyll ut alle felt med gyldige verdier.");
             }
-
             break;
 
         case "2":
-            Console.WriteLine("Student-ID (tall): ");
-            int studentIdKurs;
-            int.TryParse(Console.ReadLine(), out studentIdKurs);
+            Console.Write("Student-ID (tall): ");
+            int.TryParse(Console.ReadLine(), out int studentIdKurs);
 
-            Console.WriteLine("Kurskode: ");
+            Console.Write("Kurskode: ");
             string? kursKode = Console.ReadLine() ?? string.Empty;
 
             uni.MeldStudentPåKurs(studentIdKurs, kursKode);
@@ -69,15 +66,15 @@ while (kjører)
                 else
                 {
                     foreach (var deltager in kurs.Deltagere)
-                                {
-                        Console.WriteLine($"  - {deltager.StudentID}: {deltager.Navn}");
+                    {
+                        Console.WriteLine($"  - {deltager.Id}: {deltager.Navn}");
                     }
                 }
             }
             break;
 
         case "4":
-            Console.WriteLine("Søk (kode eller navn): ");
+            Console.Write("Søk (kode eller navn): ");
             string kursSok = Console.ReadLine()?.ToLower() ?? string.Empty;
 
             var kursTreff = from kurs in uni.Kurs
@@ -92,7 +89,7 @@ while (kjører)
             break;
 
         case "5":
-            Console.WriteLine("Søk (tittel eller forfatter): ");
+            Console.Write("Søk (tittel eller forfatter): ");
             string bokSok = Console.ReadLine()?.ToLower() ?? string.Empty;
 
             var bokTreff = from bok in uni.Bibliotek
@@ -107,48 +104,54 @@ while (kjører)
             break;
 
         case "6":
-            Console.WriteLine("Student-ID (tall): ");
-            int laanStudentId;
-            int.TryParse(Console.ReadLine(), out laanStudentId);
+            Console.Write("Bruker-ID (student/ansatt, tall): ");
+            int.TryParse(Console.ReadLine(), out int lånBrukerId);
 
-            Console.WriteLine("Bok-ID (tall): ");
-            int laanBokId; 
-            int.TryParse(Console.ReadLine(), out laanBokId);
+            Console.Write("Bok-ID (tall): ");
+            int.TryParse(Console.ReadLine(), out int lånBokId);
 
-            uni.LånBok(laanStudentId, laanBokId);
+            uni.LånBok(lånBrukerId, lånBokId);
             break;
 
         case "7":
-            Console.WriteLine("Bok-ID (tall): ");
-            int returBokId;
-            int.TryParse(Console.ReadLine(), out returBokId);
+            Console.Write("Bok-ID (tall): ");
+            int.TryParse(Console.ReadLine(), out int returBokId);
 
-            Console.WriteLine("Student-ID (tall): ");
-            int returStudentId; 
-            int.TryParse(Console.ReadLine(), out returStudentId);
+            // Endret fra Student-ID til Bruker-ID her
+            Console.Write("Bruker-ID (student/ansatt, tall): ");
+            int.TryParse(Console.ReadLine(), out int returBrukerId);
 
-            uni.ReturnerBok(returBokId, returStudentId);
+            uni.ReturnerBok(returBokId, returBrukerId);
             break;
 
         case "8":
-            Console.WriteLine("Bok-ID (tall): ");
-            int nyBokId;
-            int.TryParse(Console.ReadLine() ?? string.Empty, out nyBokId);
+            Console.Write("Bok-ID (tall): ");
+            int.TryParse(Console.ReadLine() ?? string.Empty, out int nyBokId);
 
-            Console.WriteLine("Tittel: ");
+            Console.Write("Tittel: ");
             string? tittel = Console.ReadLine() ?? string.Empty;
-            Console.WriteLine("Forfatter: ");
+            Console.Write("Forfatter: ");
             string? forfatter = Console.ReadLine() ?? string.Empty;
 
-            Console.WriteLine("År: ");
-            int år; 
-            int.TryParse(Console.ReadLine() ?? string.Empty, out år);
+            Console.Write("År: ");
+            int.TryParse(Console.ReadLine() ?? string.Empty, out int år);
 
-            Console.WriteLine("Antall eksemplarer: ");
-            int antall;
-            int.TryParse(Console.ReadLine() ?? string.Empty, out antall);
+            Console.Write("Antall eksemplarer: ");
+            int.TryParse(Console.ReadLine() ?? string.Empty, out int antall);
 
             uni.RegistrerBok(nyBokId, tittel, forfatter, år, antall);
+            break;
+
+        case "9":
+            Console.Write("Student-ID (tall): ");
+            if (int.TryParse(Console.ReadLine(), out int studentId))
+            {
+                uni.VisStudentensKurs(studentId);
+            }
+            else
+            {
+                Console.WriteLine("Ugyldig ID.");
+            }
             break;
 
         case "0":
