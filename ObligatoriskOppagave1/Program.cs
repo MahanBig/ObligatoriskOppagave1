@@ -14,6 +14,7 @@ while (kjører)
     Console.WriteLine("[6] Lån bok");
     Console.WriteLine("[7] Returner bok");
     Console.WriteLine("[8] Registrer bok");
+    Console.WriteLine("[9] Print studentens kurs");
     Console.WriteLine("[0] Avslutt");
     Console.Write("Velg en handling: ");
 
