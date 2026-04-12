@@ -9,8 +9,8 @@ namespace ObligatoriskOppagave1
         public string Stilling { get; set; }
         public string Avdeling { get; set; }
 
-        public Ansatt(int id, string navn, string epost, string stilling, string avdeling)
-            : base(id, navn, epost)
+        public Ansatt(int id, string navn, string epost, string brukernavn, string passord, string stilling, string avdeling, BrukerRolle rolle)
+            : base(id, navn, epost, brukernavn, passord, rolle)
         {
             Stilling = stilling;
             Avdeling = avdeling;

@@ -11,13 +11,16 @@ namespace ObligatoriskOppagave1
         public int MaksAntallPlasser { get; set; }
         public int StudiePoeng { get; set; }
         public List<Student> Deltagere { get; set; } = new List<Student>();
+        public List<Bok> Pensum { get; set; } = new List<Bok>();
+        public Ansatt AnsvarligLærer { get; set; }
 
-        public Kurs(string kode, string navn, int poeng, int maks)
+        public Kurs(string kode, string navn, int poeng, int maks, Ansatt lærer)
         {
-            KursNavn = navn;
             KursKode = kode;
-            MaksAntallPlasser = maks;
+            KursNavn = navn;
             StudiePoeng = poeng;
+            MaksAntallPlasser = maks;
+            AnsvarligLærer = lærer;
         }
 
         public bool ErPlass()

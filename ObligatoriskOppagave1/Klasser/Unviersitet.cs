@@ -1,72 +1,131 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace ObligatoriskOppagave1
 {
     internal class Unviersitet
     {
-        // Lister
+        // Lists for data storage
         public List<Student> Studenter { get; set; } = new List<Student>();
-        public List<Ansatt> Ansatte { get; set; } = new List<Ansatt>(); 
-        public List<Kurs> Kurs { get; set; } = new List<Kurs>();
+        public List<Ansatt> Ansatte { get; set; } = new List<Ansatt>();
+        public List<Kurs> KursListe { get; set; } = new List<Kurs>();
         public List<Bok> Bibliotek { get; set; } = new List<Bok>();
         public List<Lån> LånHistorikk { get; set; } = new List<Lån>();
 
         public Unviersitet()
         {
-            Studenter.Add(new Student(1, "Ola Nordmann", "ola@universitet.no"));
-            Studenter.Add(new Student(2, "Kari Nordmann", "kari@universitet.no"));
-            Studenter.Add(new Student(3, "Per Post", "per@universitet.no"));
+            // Seeding initial data with the updated constructors (Id, Name, Email, Username, Password...)
+            Studenter.Add(new Student(1, "Ola Nordmann", "ola@uni.no", "ola1", "pass123"));
+            Studenter.Add(new Student(2, "Kari Nordmann", "kari@uni.no", "kari1", "pass123"));
 
-            Ansatte.Add(new Ansatt(4, "Kåre Lærer", "kaare@universitet.no", "Professor", "IT"));
+            // Adding a Teacher and a Librarian
+            Ansatte.Add(new Ansatt(3, "Kåre Lærer", "kaare@uni.no", "kaare1", "lærerpass", "Professor", "IT", BrukerRolle.Faglærer));
+            Ansatte.Add(new Ansatt(4, "Bibliotek Berit", "berit@uni.no", "berit1", "bibpass", "Librarian", "Bibliotek", BrukerRolle.Bibliotekar));
         }
 
+        #region Authentication & Search
+
+        public Bruker? LoggInn(string brukernavn, string passord)
+        {
+            // Search through both students and staff
+            var student = Studenter.FirstOrDefault(s => s.Brukernavn == brukernavn && s.Passord == passord);
+            if (student != null) return student;
+
+            return Ansatte.FirstOrDefault(a => a.Brukernavn == brukernavn && a.Passord == passord);
+        }
+
+        public void RegistrerNyStudent(string navn, string epost, string brukernavn, string passord)
+        {
+            if (Studenter.Any(s => s.Brukernavn == brukernavn) || Ansatte.Any(a => a.Brukernavn == brukernavn))
+            {
+                throw new Exception("Brukernavnet er allerede i bruk.");
+            }
+
+            int nyId = (Studenter.Count + Ansatte.Count) + 1;
+            Studenter.Add(new Student(nyId, navn, epost, brukernavn, passord));
+            Console.WriteLine($"Bruker {navn} er registrert som student.");
+        }
 
         public Student? GetStudentFraListe(int studentId)
         {
-            var student = (from studenten in Studenter
-                           where studenten.Id == studentId
-                           select studenten).FirstOrDefault();
-            return student;
+            return Studenter.FirstOrDefault(s => s.Id == studentId);
         }
+
         public Bruker? GetBrukerFraListe(int id)
         {
-            Bruker? bruker = (from studenten in Studenter
-                              where studenten.Id == id
-                              select studenten).FirstOrDefault();
-
+            Bruker? bruker = Studenter.FirstOrDefault(s => s.Id == id);
             if (bruker == null)
             {
-                bruker = (from ansatt in Ansatte
-                          where ansatt.Id == id
-                          select ansatt).FirstOrDefault();
+                bruker = Ansatte.FirstOrDefault(a => a.Id == id);
             }
             return bruker;
         }
 
         public Kurs? GetKursFraListe(string kursKode)
         {
-            var kurs = (from kursen in Kurs
-                        where kursen.KursKode == kursKode
-                        select kursen).FirstOrDefault();
-            return kurs;
+            return KursListe.FirstOrDefault(k => k.KursKode.Equals(kursKode, StringComparison.OrdinalIgnoreCase));
         }
 
         public Bok? GetBokFraListe(int bokId)
         {
-            var bok = (from boken in Bibliotek
-                       where boken.Id == bokId
-                       select boken).FirstOrDefault();
-            return bok;
+            return Bibliotek.FirstOrDefault(b => b.Id == bokId);
         }
 
-        // Selve kjøttet på koden
-        public void OprettKurs(string kode, string navn, int poeng, int maks)
+        #endregion
+
+        #region Course Management (Teacher & Student)
+
+        public void OprettKurs(string kode, string navn, int poeng, int maks, Ansatt lærer)
         {
-            Kurs NyttKurs = new Kurs(kode, navn, poeng, maks);
-            Kurs.Add(NyttKurs);
-            Console.WriteLine($"Kurset {kode} har blitt registrert");
+            // SPEC: Prevent duplicate course code or name
+            if (KursListe.Any(k => k.KursKode.Equals(kode, StringComparison.OrdinalIgnoreCase) ||
+                                   k.KursNavn.Equals(navn, StringComparison.OrdinalIgnoreCase)))
+            {
+                Console.WriteLine("Feil: Et kurs med denne koden eller dette navnet eksisterer allerede.");
+                return;
+            }
+
+            Kurs nyttKurs = new Kurs(kode, navn, poeng, maks, lærer);
+            KursListe.Add(nyttKurs);
+            Console.WriteLine($"Kurset {kode}: {navn} har blitt registrert med {lærer.Navn} som faglærer.");
+        }
+
+        public void RegistrerPensumTilKurs(string kursKode, int bokId)
+        {
+            var kurs = GetKursFraListe(kursKode);
+            var bok = GetBokFraListe(bokId);
+
+            if (kurs == null || bok == null)
+            {
+                Console.WriteLine("Feil: Fant ikke kurset eller boken.");
+                return;
+            }
+
+            if (!kurs.Pensum.Contains(bok))
+            {
+                kurs.Pensum.Add(bok);
+                Console.WriteLine($"'{bok.Tittel}' er lagt til som pensum for {kurs.KursNavn}.");
+            }
+        }
+
+        public void SettKarakter(string kursKode, int studentId, string karakter)
+        {
+            var student = GetStudentFraListe(studentId);
+            if (student != null)
+            {
+                // Check if student is actually in the course
+                if (student.PåmeldteKurs.Any(k => k.KursKode == kursKode))
+                {
+                    student.Karakterer[kursKode] = karakter;
+                    Console.WriteLine($"Karakter {karakter} satt for {student.Navn} i {kursKode}.");
+                }
+                else
+                {
+                    Console.WriteLine("Studenten er ikke påmeldt dette kurset.");
+                }
+            }
         }
 
         public void MeldStudentPåKurs(int studentId, string kursKode)
@@ -74,10 +133,10 @@ namespace ObligatoriskOppagave1
             var student = GetStudentFraListe(studentId);
             var kurs = GetKursFraListe(kursKode);
 
-            if (student == null) { return; }
-            if (kurs == null) { return; }
+            if (student == null || kurs == null) { Console.WriteLine("Fant ikke student eller kurs."); return; }
 
-            if (kurs.Deltagere.Contains(student))
+            // SPEC: Prevent duplicate enrollment
+            if (kurs.Deltagere.Any(d => d.Id == studentId))
             {
                 Console.WriteLine("Studenten er allerede påmeldt dette kurset.");
                 return;
@@ -85,7 +144,7 @@ namespace ObligatoriskOppagave1
 
             if (!kurs.ErPlass())
             {
-                Console.WriteLine("Kurset er fullt");
+                Console.WriteLine("Kurset er fullt.");
                 return;
             }
 
@@ -98,63 +157,42 @@ namespace ObligatoriskOppagave1
         {
             var kurs = GetKursFraListe(kursKode);
             var student = GetStudentFraListe(studentId);
-            if (student == null) { return; }
-            if (kurs == null) { return; }
 
-            kurs.Deltagere.Remove(student);
-            student.PåmeldteKurs.Remove(kurs);
+            if (student != null && kurs != null)
+            {
+                kurs.Deltagere.Remove(student);
+                student.PåmeldteKurs.Remove(kurs);
+                Console.WriteLine("Avmelding bekreftet.");
+            }
         }
 
-        public void VisStudentensKurs(int studentId)
+        public void VisStudentensKursOgKarakterer(int studentId)
         {
             var student = GetStudentFraListe(studentId);
+            if (student == null) return;
 
-            if (student == null)
+            Console.WriteLine($"\nKurs og karakterer for {student.Navn}:");
+            foreach (var kurs in student.PåmeldteKurs)
             {
-                Console.WriteLine("Fant ikke studenten.");
-                return;
-            }
-
-            Console.WriteLine($"\nKurs som {student.Navn} er påmeldt:");
-
-            if (student.PåmeldteKurs.Count == 0)
-            {
-                Console.WriteLine("- Ingen påmeldte kurs.");
-            }
-            else
-            {
-                foreach (var kurs in student.PåmeldteKurs)
-                {
-                    Console.WriteLine($"- {kurs.KursKode}: {kurs.KursNavn} ({kurs.StudiePoeng} studiepoeng)");
-                }
+                string karakter = student.Karakterer.ContainsKey(kurs.KursKode) ? student.Karakterer[kurs.KursKode] : "Ingen karakter satt";
+                Console.WriteLine($"- {kurs.KursKode}: {kurs.KursNavn} | Karakter: {karakter}");
             }
         }
+
+        #endregion
+
+        #region Library Management (Librarian, Teacher & Student)
 
         public void RegistrerBok(int id, string tittel, string forfatter, int år, int antall)
         {
+            if (Bibliotek.Any(b => b.Id == id))
+            {
+                Console.WriteLine("Feil: En bok med denne ID-en finnes allerede.");
+                return;
+            }
             Bok bok = new Bok(id, tittel, forfatter, år, antall);
             Bibliotek.Add(bok);
-            Console.WriteLine($"Boken {tittel} har blitt registrert");
-        }
-
-        public void VisAktiveLån()
-        {
-            var aktiveLån = from lån in LånHistorikk
-                            where lån.ErAktiv() == true
-                            select lån;
-
-            foreach (Lån item in aktiveLån)
-            {
-                Console.WriteLine($"Aktivt lån fra {item.Låner.Navn} av boken {item.Bok.Tittel}");
-            }
-        }
-
-        public void VisLåneHistorikk()
-        {
-            foreach (Lån item in LånHistorikk)
-            {
-                Console.WriteLine(item.ToString());
-            }
+            Console.WriteLine($"Boken '{tittel}' har blitt registrert i biblioteket.");
         }
 
         public void LånBok(int brukerId, int bokId)
@@ -162,39 +200,53 @@ namespace ObligatoriskOppagave1
             var bruker = GetBrukerFraListe(brukerId);
             var bok = GetBokFraListe(bokId);
 
-            if (bruker == null) { Console.WriteLine("Fant ikke bruker."); return; }
-            if (bok == null) { Console.WriteLine("Fant ikke bok."); return; }
+            if (bruker == null || bok == null) { Console.WriteLine("Fant ikke bruker eller bok."); return; }
 
-            int aktiveLånPåBok = (from lånet in LånHistorikk
-                                  where lånet.Bok.Id == bok.Id && lånet.ErAktiv() == true
-                                  select lånet).Count();
+            int aktiveLånPåBok = LånHistorikk.Count(l => l.Bok.Id == bok.Id && l.ErAktiv());
 
             if (aktiveLånPåBok >= bok.Antall)
             {
-                Console.WriteLine("Ingen ledige eksemplarer av denne boken akkurat nå.");
+                Console.WriteLine("Ingen ledige eksemplarer tilgjengelig.");
                 return;
             }
 
-            Lån nyttLån = new Lån(bruker, bok);
-            LånHistorikk.Add(nyttLån);
-
+            LånHistorikk.Add(new Lån(bruker, bok));
             Console.WriteLine($"{bruker.Navn} lånte '{bok.Tittel}'.");
         }
 
         public void ReturnerBok(int bokId, int brukerId)
         {
-            Lån? aktivLån = (from lånet in LånHistorikk
-                             where lånet.Bok.Id == bokId && lånet.Låner.Id == brukerId && lånet.ErAktiv() == true
-                             select lånet).FirstOrDefault();
+            var aktivLån = LånHistorikk.FirstOrDefault(l => l.Bok.Id == bokId && l.Låner.Id == brukerId && l.ErAktiv());
 
             if (aktivLån == null)
             {
-                Console.WriteLine("Fant ikke et aktivt lån for denne brukeren/boken.");
+                Console.WriteLine("Fant ikke et aktivt lån for denne brukeren på denne boken.");
                 return;
             }
 
             aktivLån.LeverBok();
-            Console.WriteLine($"'{aktivLån.Bok.Tittel}' er nå levert tilbake.");
+            Console.WriteLine($"'{aktivLån.Bok.Tittel}' er levert tilbake av {aktivLån.Låner.Navn}.");
         }
+
+        public void VisAktiveLån()
+        {
+            var aktive = LånHistorikk.Where(l => l.ErAktiv());
+            Console.WriteLine("\n=== Aktive lån i systemet ===");
+            foreach (var lån in aktive)
+            {
+                Console.WriteLine($"- {lån.Bok.Tittel} (Lånt av: {lån.Låner.Navn})");
+            }
+        }
+
+        public void VisLåneHistorikk()
+        {
+            Console.WriteLine("\n=== Full lånehistorikk ===");
+            foreach (var lån in LånHistorikk)
+            {
+                Console.WriteLine(lån.ToString());
+            }
+        }
+
+        #endregion
     }
 }

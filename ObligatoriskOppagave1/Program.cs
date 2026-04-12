@@ -1,167 +1,162 @@
 ﻿using ObligatoriskOppagave1;
+using System;
 
 Unviersitet uni = new Unviersitet();
-bool kjører = true;
+Bruker? aktivBruker = null;
+bool kjørerSystem = true;
 
-while (kjører)
+while (kjørerSystem)
 {
-    Console.WriteLine("\n=== UNIVERSITETSSYSTEM ===");
-    Console.WriteLine("[1] Opprett kurs");
-    Console.WriteLine("[2] Meld student til kurs");
-    Console.WriteLine("[3] Print kurs og deltagere");
-    Console.WriteLine("[4] Søk på kurs");
-    Console.WriteLine("[5] Søk på bok");
-    Console.WriteLine("[6] Lån bok");
-    Console.WriteLine("[7] Returner bok");
-    Console.WriteLine("[8] Registrer bok");
-    Console.WriteLine("[9] Print studentens kurs");
-    Console.WriteLine("[0] Avslutt");
-    Console.Write("Velg en handling: ");
-
-    string? valg = Console.ReadLine();
-    Console.WriteLine();
-
-    switch (valg)
+    // --- 1. LOGIN / REGISTRATION FLOW ---
+    if (aktivBruker == null)
     {
-        case "1":
-            Console.Write("Kurskode: ");
-            string? kode = Console.ReadLine();
+        Console.WriteLine("\n=== VELKOMMEN TIL UNIVERSITETET ===");
+        Console.WriteLine("[1] Logg inn");
+        Console.WriteLine("[2] Registrer ny student");
+        Console.WriteLine("[0] Avslutt");
+        Console.Write("Velg handling: ");
+        string? startValg = Console.ReadLine();
 
-            Console.Write("Kursnavn: ");
-            string? navn = Console.ReadLine();
+        if (startValg == "1")
+        {
+            Console.Write("Brukernavn: ");
+            string bn = Console.ReadLine() ?? "";
+            Console.Write("Passord: ");
+            string ps = Console.ReadLine() ?? "";
 
-            Console.Write("Studiepoeng (heltall): ");
-            bool poengParsed = int.TryParse(Console.ReadLine(), out int poeng);
-
-            Console.Write("Maks antall plasser: ");
-            bool maksParsed = int.TryParse(Console.ReadLine(), out int maks);
-
-            if (!string.IsNullOrWhiteSpace(kode) && !string.IsNullOrWhiteSpace(navn) && poengParsed && maksParsed)
+            aktivBruker = uni.LoggInn(bn, ps);
+            if (aktivBruker == null) Console.WriteLine(">>> Feil brukernavn eller passord!");
+        }
+        else if (startValg == "2")
+        {
+            try
             {
-                uni.OprettKurs(kode, navn, poeng, maks);
+                Console.Write("Fullt navn: "); string navn = Console.ReadLine() ?? "";
+                Console.Write("Epost: "); string epost = Console.ReadLine() ?? "";
+                Console.Write("Velg brukernavn: "); string bn = Console.ReadLine() ?? "";
+                Console.Write("Velg passord: "); string ps = Console.ReadLine() ?? "";
+
+                uni.RegistrerNyStudent(navn, epost, bn, ps);
             }
-            else
+            catch (Exception ex)
             {
-                Console.WriteLine("Feil: Vennligst fyll ut alle felt med gyldige verdier.");
+                Console.WriteLine($">>> FEIL: {ex.Message}");
             }
-            break;
+        }
+        else if (startValg == "0") kjørerSystem = false;
+        continue;
+    }
 
-        case "2":
-            Console.Write("Student-ID (tall): ");
-            int.TryParse(Console.ReadLine(), out int studentIdKurs);
+    // --- 2. MAIN SYSTEM (LOGGED IN) ---
+    Console.WriteLine($"\n--- Logget inn som: {aktivBruker.Navn} ({aktivBruker.Rolle}) ---");
 
-            Console.Write("Kurskode: ");
-            string? kursKode = Console.ReadLine() ?? string.Empty;
+    // Switch menu based on Role
+    if (aktivBruker.Rolle == BrukerRolle.Faglærer)
+    {
+        VisLærerMeny(uni, (Ansatt)aktivBruker);
+    }
+    else if (aktivBruker.Rolle == BrukerRolle.Student)
+    {
+        VisStudentMeny(uni, (Student)aktivBruker);
+    }
+    else if (aktivBruker.Rolle == BrukerRolle.Bibliotekar)
+    {
+        VisBibliotekarMeny(uni);
+    }
 
-            uni.MeldStudentPåKurs(studentIdKurs, kursKode);
-            break;
+    // Logout option available for all
+    Console.WriteLine("[0] Logg ut");
+    Console.Write("Velg handling: ");
+    string? menyValg = Console.ReadLine();
 
-        case "3":
-            foreach (var kurs in uni.Kurs)
+    if (menyValg == "0") aktivBruker = null;
+    else HåndterValg(menyValg, uni, aktivBruker);
+}
+
+// --- MENU HANDLERS ---
+
+void VisLærerMeny(Unviersitet uni, Ansatt lærer)
+{
+    Console.WriteLine("[1] Opprett kurs");
+    Console.WriteLine("[2] Sett karakter");
+    Console.WriteLine("[3] Registrer pensum");
+    Console.WriteLine("[4] Søk på kurs/bøker");
+    Console.WriteLine("[5] Lån/Returner bok");
+}
+
+void VisStudentMeny(Unviersitet uni, Student student)
+{
+    Console.WriteLine("[1] Meld på kurs");
+    Console.WriteLine("[2] Meld av kurs");
+    Console.WriteLine("[3] Se mine kurs og karakterer");
+    Console.WriteLine("[4] Søk på bøker");
+    Console.WriteLine("[5] Lån/Returner bok");
+}
+
+void VisBibliotekarMeny(Unviersitet uni)
+{
+    Console.WriteLine("[1] Registrer ny bok");
+    Console.WriteLine("[2] Se aktive lån");
+    Console.WriteLine("[3] Se lånehistorikk");
+}
+
+void HåndterValg(string? valg, Unviersitet uni, Bruker bruker)
+{
+    switch (bruker.Rolle)
+    {
+        case BrukerRolle.Faglærer:
+            if (valg == "1")
             {
-                Console.WriteLine($"\nKurs: {kurs.KursKode} - {kurs.KursNavn}");
-                if (kurs.Deltagere.Count == 0)
-                {
-                    Console.WriteLine("  - Ingen deltagere påmeldt enda.");
-                }
-                else
-                {
-                    foreach (var deltager in kurs.Deltagere)
-                    {
-                        Console.WriteLine($"  - {deltager.Id}: {deltager.Navn}");
-                    }
-                }
+                Console.Write("Kurskode: "); string k = Console.ReadLine() ?? "";
+                Console.Write("Navn: "); string n = Console.ReadLine() ?? "";
+                uni.OprettKurs(k, n, 10, 30, (Ansatt)bruker);
             }
-            break;
-
-        case "4":
-            Console.Write("Søk (kode eller navn): ");
-            string kursSok = Console.ReadLine()?.ToLower() ?? string.Empty;
-
-            var kursTreff = from kurs in uni.Kurs
-                            where kurs.KursKode.ToLower().Contains(kursSok) ||
-                                  kurs.KursNavn.ToLower().Contains(kursSok)
-                            select kurs;
-
-            foreach (var kurs in kursTreff)
+            if (valg == "2")
             {
-                Console.WriteLine($"- {kurs.KursKode}: {kurs.KursNavn}");
+                Console.Write("Kurskode: "); string k = Console.ReadLine() ?? "";
+                Console.Write("Student-ID: "); int.TryParse(Console.ReadLine(), out int id);
+                Console.Write("Karakter (A-F): "); string kar = Console.ReadLine() ?? "";
+                uni.SettKarakter(k, id, kar);
             }
-            break;
-
-        case "5":
-            Console.Write("Søk (tittel eller forfatter): ");
-            string bokSok = Console.ReadLine()?.ToLower() ?? string.Empty;
-
-            var bokTreff = from bok in uni.Bibliotek
-                           where bok.Tittel.ToLower().Contains(bokSok) ||
-                                 bok.Forfatter.ToLower().Contains(bokSok)
-                           select bok;
-
-            foreach (var b in bokTreff)
+            if (valg == "3")
             {
-                Console.WriteLine($"- {b.Id}: {b.Tittel} av {b.Forfatter}");
+                Console.Write("Kurskode: "); string k = Console.ReadLine() ?? "";
+                Console.Write("Bok-ID: "); int.TryParse(Console.ReadLine(), out int id);
+                uni.RegistrerPensumTilKurs(k, id);
             }
+            if (valg == "5") HåndterLån(uni, bruker);
             break;
 
-        case "6":
-            Console.Write("Bruker-ID (student/ansatt, tall): ");
-            int.TryParse(Console.ReadLine(), out int lånBrukerId);
-
-            Console.Write("Bok-ID (tall): ");
-            int.TryParse(Console.ReadLine(), out int lånBokId);
-
-            uni.LånBok(lånBrukerId, lånBokId);
-            break;
-
-        case "7":
-            Console.Write("Bok-ID (tall): ");
-            int.TryParse(Console.ReadLine(), out int returBokId);
-
-            // Endret fra Student-ID til Bruker-ID her
-            Console.Write("Bruker-ID (student/ansatt, tall): ");
-            int.TryParse(Console.ReadLine(), out int returBrukerId);
-
-            uni.ReturnerBok(returBokId, returBrukerId);
-            break;
-
-        case "8":
-            Console.Write("Bok-ID (tall): ");
-            int.TryParse(Console.ReadLine() ?? string.Empty, out int nyBokId);
-
-            Console.Write("Tittel: ");
-            string? tittel = Console.ReadLine() ?? string.Empty;
-            Console.Write("Forfatter: ");
-            string? forfatter = Console.ReadLine() ?? string.Empty;
-
-            Console.Write("År: ");
-            int.TryParse(Console.ReadLine() ?? string.Empty, out int år);
-
-            Console.Write("Antall eksemplarer: ");
-            int.TryParse(Console.ReadLine() ?? string.Empty, out int antall);
-
-            uni.RegistrerBok(nyBokId, tittel, forfatter, år, antall);
-            break;
-
-        case "9":
-            Console.Write("Student-ID (tall): ");
-            if (int.TryParse(Console.ReadLine(), out int studentId))
+        case BrukerRolle.Student:
+            if (valg == "1")
             {
-                uni.VisStudentensKurs(studentId);
+                Console.Write("Kurskode: "); string k = Console.ReadLine() ?? "";
+                uni.MeldStudentPåKurs(bruker.Id, k);
             }
-            else
+            if (valg == "3") uni.VisStudentensKursOgKarakterer(bruker.Id);
+            if (valg == "5") HåndterLån(uni, bruker);
+            break;
+
+        case BrukerRolle.Bibliotekar:
+            if (valg == "1")
             {
-                Console.WriteLine("Ugyldig ID.");
+                Console.Write("ID: "); int.TryParse(Console.ReadLine(), out int id);
+                Console.Write("Tittel: "); string t = Console.ReadLine() ?? "";
+                Console.Write("Forfatter: "); string f = Console.ReadLine() ?? "";
+                uni.RegistrerBok(id, t, f, 2024, 5);
             }
-            break;
-
-        case "0":
-            kjører = false;
-            Console.WriteLine("Avslutter programmet...");
-            break;
-
-        default:
-            Console.WriteLine("Ugyldig valg. Trykk et tall mellom 0 og 8.");
+            if (valg == "2") uni.VisAktiveLån();
             break;
     }
+}
+
+void HåndterLån(Unviersitet uni, Bruker bruker)
+{
+    Console.WriteLine("[1] Lån [2] Returner");
+    string? v = Console.ReadLine();
+    Console.Write("Bok-ID: ");
+    int.TryParse(Console.ReadLine(), out int bid);
+
+    if (v == "1") uni.LånBok(bruker.Id, bid);
+    else uni.ReturnerBok(bid, bruker.Id);
 }

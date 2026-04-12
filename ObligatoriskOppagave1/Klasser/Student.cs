@@ -7,9 +7,10 @@ namespace ObligatoriskOppagave1
     internal class Student : Bruker
     {
         public List<Kurs> PåmeldteKurs { get; set; } = new List<Kurs>();
+        public Dictionary<string, string> Karakterer { get; set; } = new Dictionary<string, string>();
 
-        public Student(int id, string navn, string epost)
-            : base(id, navn, epost)
+        public Student(int id, string navn, string epost, string brukernavn, string passord)
+            : base(id, navn, epost, brukernavn, passord, BrukerRolle.Student)
         {
         }
     }
