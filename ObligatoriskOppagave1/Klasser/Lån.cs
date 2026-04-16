@@ -6,6 +6,7 @@ namespace ObligatoriskOppagave1
 {
     internal class Lån
     {
+        // new commment
         public Bruker Låner { get; set; }
         public Bok Bok { get; set; }
         public DateTime UtlånsDato { get; set; }
