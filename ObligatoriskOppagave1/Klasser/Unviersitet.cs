@@ -27,27 +27,6 @@ namespace ObligatoriskOppagave1
 
         #region Authentication & Search
 
-        public Bruker? LoggInn(string brukernavn, string passord)
-        {
-            // Search through both students and staff
-            var student = Studenter.FirstOrDefault(s => s.Brukernavn == brukernavn && s.Passord == passord);
-            if (student != null) return student;
-
-            return Ansatte.FirstOrDefault(a => a.Brukernavn == brukernavn && a.Passord == passord);
-        }
-
-        public void RegistrerNyStudent(string navn, string epost, string brukernavn, string passord)
-        {
-            if (Studenter.Any(s => s.Brukernavn == brukernavn) || Ansatte.Any(a => a.Brukernavn == brukernavn))
-            {
-                throw new Exception("Brukernavnet er allerede i bruk.");
-            }
-
-            int nyId = (Studenter.Count + Ansatte.Count) + 1;
-            Studenter.Add(new Student(nyId, navn, epost, brukernavn, passord));
-            Console.WriteLine($"Bruker {navn} er registrert som student.");
-        }
-
         public Student? GetStudentFraListe(int studentId)
         {
             return Studenter.FirstOrDefault(s => s.Id == studentId);
@@ -71,6 +50,29 @@ namespace ObligatoriskOppagave1
         public Bok? GetBokFraListe(int bokId)
         {
             return Bibliotek.FirstOrDefault(b => b.Id == bokId);
+        }
+
+        public Bruker? LoggInn(string brukernavn, string passord)
+        {
+            // Search through both students and staff
+            var student = (from s in Studenter
+                           where s.Brukernavn == brukernavn && s.Passord == passord
+                           select s).FirstOrDefault();
+            if (student != null) return student;
+
+            return Ansatte.FirstOrDefault(a => a.Brukernavn == brukernavn && a.Passord == passord);
+        }
+
+        public void RegistrerNyStudent(string navn, string epost, string brukernavn, string passord)
+        {
+            if (Studenter.Any(s => s.Brukernavn == brukernavn) || Ansatte.Any(a => a.Brukernavn == brukernavn))
+            {
+                throw new Exception("Brukernavnet er allerede i bruk.");
+            }
+
+            int nyId = (Studenter.Count + Ansatte.Count) + 1;
+            Studenter.Add(new Student(nyId, navn, epost, brukernavn, passord));
+            Console.WriteLine($"Bruker {navn} er registrert som student.");
         }
 
         #endregion

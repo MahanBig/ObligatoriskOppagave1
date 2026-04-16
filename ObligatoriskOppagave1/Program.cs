@@ -53,15 +53,15 @@ while (kjørerSystem)
     // Switch menu based on Role
     if (aktivBruker.Rolle == BrukerRolle.Faglærer)
     {
-        VisLærerMeny(uni, (Ansatt)aktivBruker);
+        VisLærerMeny();
     }
     else if (aktivBruker.Rolle == BrukerRolle.Student)
     {
-        VisStudentMeny(uni, (Student)aktivBruker);
+        VisStudentMeny();
     }
     else if (aktivBruker.Rolle == BrukerRolle.Bibliotekar)
     {
-        VisBibliotekarMeny(uni);
+        VisBibliotekarMeny();
     }
 
     // Logout option available for all
@@ -75,7 +75,7 @@ while (kjørerSystem)
 
 // --- MENU HANDLERS ---
 
-void VisLærerMeny(Unviersitet uni, Ansatt lærer)
+void VisLærerMeny()
 {
     Console.WriteLine("[1] Opprett kurs");
     Console.WriteLine("[2] Sett karakter");
@@ -84,7 +84,7 @@ void VisLærerMeny(Unviersitet uni, Ansatt lærer)
     Console.WriteLine("[5] Lån/Returner bok");
 }
 
-void VisStudentMeny(Unviersitet uni, Student student)
+void VisStudentMeny()
 {
     Console.WriteLine("[1] Meld på kurs");
     Console.WriteLine("[2] Meld av kurs");
@@ -93,7 +93,7 @@ void VisStudentMeny(Unviersitet uni, Student student)
     Console.WriteLine("[5] Lån/Returner bok");
 }
 
-void VisBibliotekarMeny(Unviersitet uni)
+void VisBibliotekarMeny()
 {
     Console.WriteLine("[1] Registrer ny bok");
     Console.WriteLine("[2] Se aktive lån");
@@ -107,31 +107,41 @@ void HåndterValg(string? valg, Unviersitet uni, Bruker bruker)
         case BrukerRolle.Faglærer:
             if (valg == "1")
             {
-                Console.Write("Kurskode: "); string k = Console.ReadLine() ?? "";
-                Console.Write("Navn: "); string n = Console.ReadLine() ?? "";
+                Console.Write("Kurskode: ");
+                string k = Console.ReadLine() ?? "";
+                Console.Write("Navn: ");
+                string n = Console.ReadLine() ?? "";
                 uni.OprettKurs(k, n, 10, 30, (Ansatt)bruker);
             }
             if (valg == "2")
             {
-                Console.Write("Kurskode: "); string k = Console.ReadLine() ?? "";
-                Console.Write("Student-ID: "); int.TryParse(Console.ReadLine(), out int id);
-                Console.Write("Karakter (A-F): "); string kar = Console.ReadLine() ?? "";
-                uni.SettKarakter(k, id, kar);
+                Console.Write("Kurskode: "); 
+                string kurs = Console.ReadLine() ?? "";
+                Console.Write("Student-ID: "); 
+                int.TryParse(Console.ReadLine(), out int id);
+                Console.Write("Karakter (A-F): "); 
+                string kar = Console.ReadLine() ?? "";
+                uni.SettKarakter(kurs, id, kar);
             }
             if (valg == "3")
             {
-                Console.Write("Kurskode: "); string k = Console.ReadLine() ?? "";
-                Console.Write("Bok-ID: "); int.TryParse(Console.ReadLine(), out int id);
-                uni.RegistrerPensumTilKurs(k, id);
+                Console.Write("Kurskode: ");
+                string kurs = Console.ReadLine() ?? "";
+                Console.Write("Bok-ID: "); 
+                int.TryParse(Console.ReadLine(), out int id);
+                uni.RegistrerPensumTilKurs(kurs, id);
             }
-            if (valg == "5") HåndterLån(uni, bruker);
+            if (valg == "5")
+            {
+                HåndterLån(uni, bruker);
+            }
             break;
 
         case BrukerRolle.Student:
             if (valg == "1")
             {
-                Console.Write("Kurskode: "); string k = Console.ReadLine() ?? "";
-                uni.MeldStudentPåKurs(bruker.Id, k);
+                Console.Write("Kurskode: "); string kurs = Console.ReadLine() ?? "";
+                uni.MeldStudentPåKurs(bruker.Id, kurs);
             }
             if (valg == "3") uni.VisStudentensKursOgKarakterer(bruker.Id);
             if (valg == "5") HåndterLån(uni, bruker);
@@ -140,12 +150,18 @@ void HåndterValg(string? valg, Unviersitet uni, Bruker bruker)
         case BrukerRolle.Bibliotekar:
             if (valg == "1")
             {
-                Console.Write("ID: "); int.TryParse(Console.ReadLine(), out int id);
-                Console.Write("Tittel: "); string t = Console.ReadLine() ?? "";
-                Console.Write("Forfatter: "); string f = Console.ReadLine() ?? "";
-                uni.RegistrerBok(id, t, f, 2024, 5);
+                Console.Write("ID: "); 
+                int.TryParse(Console.ReadLine(), out int id);
+                Console.Write("Tittel: ");
+                string tittel = Console.ReadLine() ?? "";
+                Console.Write("Forfatter: "); 
+                string forfatter = Console.ReadLine() ?? "";
+                uni.RegistrerBok(id, tittel, forfatter, 2024, 5);
             }
-            if (valg == "2") uni.VisAktiveLån();
+            if (valg == "2")
+            {
+                uni.VisAktiveLån();
+            }
             break;
     }
 }
@@ -153,10 +169,10 @@ void HåndterValg(string? valg, Unviersitet uni, Bruker bruker)
 void HåndterLån(Unviersitet uni, Bruker bruker)
 {
     Console.WriteLine("[1] Lån [2] Returner");
-    string? v = Console.ReadLine();
+    string? valg = Console.ReadLine();
     Console.Write("Bok-ID: ");
     int.TryParse(Console.ReadLine(), out int bid);
 
-    if (v == "1") uni.LånBok(bruker.Id, bid);
+    if (valg == "1") uni.LånBok(bruker.Id, bid);
     else uni.ReturnerBok(bid, bruker.Id);
 }

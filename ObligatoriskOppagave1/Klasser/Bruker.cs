@@ -1,6 +1,11 @@
 ﻿namespace ObligatoriskOppagave1
 {
-    enum BrukerRolle { Student, Faglærer, Bibliotekar }
+    enum BrukerRolle { 
+        Student, 
+        Faglærer, 
+        Bibliotekar
+    }
+   
 
     internal abstract class Bruker
     {
