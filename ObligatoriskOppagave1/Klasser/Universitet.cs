@@ -5,22 +5,19 @@ using System.Text;
 
 namespace ObligatoriskOppagave1
 {
-    internal class Unviersitet
+    internal class Universitet
     {
-        // Lists for data storage
         public List<Student> Studenter { get; set; } = new List<Student>();
         public List<Ansatt> Ansatte { get; set; } = new List<Ansatt>();
         public List<Kurs> KursListe { get; set; } = new List<Kurs>();
         public List<Bok> Bibliotek { get; set; } = new List<Bok>();
         public List<Lån> LånHistorikk { get; set; } = new List<Lån>();
 
-        public Unviersitet()
+        public Universitet()
         {
-            // Seeding initial data with the updated constructors (Id, Name, Email, Username, Password...)
             Studenter.Add(new Student(1, "Ola Nordmann", "ola@uni.no", "ola1", "pass123"));
             Studenter.Add(new Student(2, "Kari Nordmann", "kari@uni.no", "kari1", "pass123"));
 
-            // Adding a Teacher and a Librarian
             Ansatte.Add(new Ansatt(3, "Kåre Lærer", "kaare@uni.no", "kaare1", "lærerpass", "Professor", "IT", BrukerRolle.Faglærer));
             Ansatte.Add(new Ansatt(4, "Bibliotek Berit", "berit@uni.no", "berit1", "bibpass", "Librarian", "Bibliotek", BrukerRolle.Bibliotekar));
         }
@@ -29,32 +26,41 @@ namespace ObligatoriskOppagave1
 
         public Student? GetStudentFraListe(int studentId)
         {
-            return Studenter.FirstOrDefault(s => s.Id == studentId);
+            return (from s in Studenter
+                    where s.Id == studentId
+                    select s).FirstOrDefault();
         }
 
         public Bruker? GetBrukerFraListe(int id)
         {
-            Bruker? bruker = Studenter.FirstOrDefault(s => s.Id == id);
-            if (bruker == null)
-            {
-                bruker = Ansatte.FirstOrDefault(a => a.Id == id);
-            }
-            return bruker;
+            var student = (from s in Studenter
+                           where s.Id == id
+                           select s).FirstOrDefault();
+
+            if (student != null) return student;
+
+            return (from a in Ansatte
+                    where a.Id == id
+                    select a).FirstOrDefault();
         }
 
         public Kurs? GetKursFraListe(string kursKode)
         {
-            return KursListe.FirstOrDefault(k => k.KursKode.Equals(kursKode, StringComparison.OrdinalIgnoreCase));
+   
+            return (from k in KursListe
+                    where k.KursKode.Equals(kursKode, StringComparison.OrdinalIgnoreCase)
+                    select k).FirstOrDefault();
         }
 
         public Bok? GetBokFraListe(int bokId)
         {
-            return Bibliotek.FirstOrDefault(b => b.Id == bokId);
+            return (from b in Bibliotek
+                    where b.Id == bokId
+                    select b).FirstOrDefault();
         }
 
         public Bruker? LoggInn(string brukernavn, string passord)
         {
-            // Search through both students and staff
             var student = (from s in Studenter
                            where s.Brukernavn == brukernavn && s.Passord == passord
                            select s).FirstOrDefault();
@@ -79,9 +85,8 @@ namespace ObligatoriskOppagave1
 
         #region Course Management (Teacher & Student)
 
-        public void OprettKurs(string kode, string navn, int poeng, int maks, Ansatt lærer)
+        public void OprettKurs(string kode, string navn, int poeng, int maks)
         {
-            // SPEC: Prevent duplicate course code or name
             if (KursListe.Any(k => k.KursKode.Equals(kode, StringComparison.OrdinalIgnoreCase) ||
                                    k.KursNavn.Equals(navn, StringComparison.OrdinalIgnoreCase)))
             {
@@ -89,9 +94,9 @@ namespace ObligatoriskOppagave1
                 return;
             }
 
-            Kurs nyttKurs = new Kurs(kode, navn, poeng, maks, lærer);
+            Kurs nyttKurs = new Kurs(kode, navn, poeng, maks);
             KursListe.Add(nyttKurs);
-            Console.WriteLine($"Kurset {kode}: {navn} har blitt registrert med {lærer.Navn} som faglærer.");
+            Console.WriteLine($"Kurset {kode}: {navn} har blitt registrert.");
         }
 
         public void RegistrerPensumTilKurs(string kursKode, int bokId)
@@ -117,7 +122,6 @@ namespace ObligatoriskOppagave1
             var student = GetStudentFraListe(studentId);
             if (student != null)
             {
-                // Check if student is actually in the course
                 if (student.PåmeldteKurs.Any(k => k.KursKode == kursKode))
                 {
                     student.Karakterer[kursKode] = karakter;
@@ -137,7 +141,6 @@ namespace ObligatoriskOppagave1
 
             if (student == null || kurs == null) { Console.WriteLine("Fant ikke student eller kurs."); return; }
 
-            // SPEC: Prevent duplicate enrollment
             if (kurs.Deltagere.Any(d => d.Id == studentId))
             {
                 Console.WriteLine("Studenten er allerede påmeldt dette kurset.");

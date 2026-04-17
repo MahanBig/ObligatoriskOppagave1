@@ -1,4 +1,6 @@
-﻿namespace ObligatoriskOppagave1
+﻿using ObligatoriskOppagave1.Interfacer;
+
+namespace ObligatoriskOppagave1
 {
     enum BrukerRolle { 
         Student, 
@@ -7,7 +9,7 @@
     }
    
 
-    internal abstract class Bruker
+    internal abstract class Bruker : ILåner
     {
         public int Id { get; set; }
         public string Navn { get; set; }
