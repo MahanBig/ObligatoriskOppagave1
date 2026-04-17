@@ -48,7 +48,7 @@ namespace ObligatoriskOppagave1
         {
    
             return (from k in KursListe
-                    where k.KursKode.Equals(kursKode, StringComparison.OrdinalIgnoreCase)
+                    where k.KursKode == kursKode
                     select k).FirstOrDefault();
         }
 
@@ -87,8 +87,8 @@ namespace ObligatoriskOppagave1
 
         public void OprettKurs(string kode, string navn, int poeng, int maks)
         {
-            if (KursListe.Any(k => k.KursKode.Equals(kode, StringComparison.OrdinalIgnoreCase) ||
-                                   k.KursNavn.Equals(navn, StringComparison.OrdinalIgnoreCase)))
+            Kurs? funnetKurs = GetKursFraListe(kode);
+            if (funnetKurs != null )
             {
                 Console.WriteLine("Feil: Et kurs med denne koden eller dette navnet eksisterer allerede.");
                 return;
@@ -190,7 +190,8 @@ namespace ObligatoriskOppagave1
 
         public void RegistrerBok(int id, string tittel, string forfatter, int år, int antall)
         {
-            if (Bibliotek.Any(b => b.Id == id))
+            Bok? funnetBok = GetBokFraListe(id);
+            if (funnetBok != null)
             {
                 Console.WriteLine("Feil: En bok med denne ID-en finnes allerede.");
                 return;
