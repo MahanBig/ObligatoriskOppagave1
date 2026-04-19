@@ -1,6 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ObligatoriskOppagave1;
-using System.Linq;
+﻿using ObligatoriskOppagave1;
 
 namespace ObligatoriskOppgaveTest
 {
@@ -37,8 +35,8 @@ namespace ObligatoriskOppgaveTest
             Student? student = uni.GetStudentFraListe(studentId);
 
             // Assert
-            Assert.IsTrue(kurs.Deltagere.Any(s => s.Id == studentId), "Studenten ble ikke lagt til i kurslisten.");
-            Assert.IsTrue(student.PåmeldteKurs.Any(k => k.KursKode == "IT101"), "Kurset ble ikke lagt til i studentens liste.");
+            Assert.IsTrue(kurs!.Deltagere.Any(s => s.Id == studentId), "Studenten ble ikke lagt til i kurslisten.");
+            Assert.IsTrue(student!.PåmeldteKurs.Any(k => k.KursKode == "IT101"), "Kurset ble ikke lagt til i studentens liste.");
         }
 
         [TestMethod]
