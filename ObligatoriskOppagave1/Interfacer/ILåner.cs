@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ObligatoriskOppagave1.Interfacer
 {
-    internal interface ILåner
+    public interface ILåner
     {
         string Navn { get; set; }
         int Id { get; set; }

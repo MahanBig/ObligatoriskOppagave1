@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ObligatoriskOppagave1
 {
-    internal class Universitet
+    public class Universitet
     {
         public List<Student> Studenter { get; set; } = new List<Student>();
         public List<Ansatt> Ansatte { get; set; } = new List<Ansatt>();

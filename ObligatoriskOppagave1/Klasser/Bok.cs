@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ObligatoriskOppagave1
 {
-    internal class Bok
+    public class Bok
     {
         public int Id { get; set; }
         public string Tittel { get; set; }

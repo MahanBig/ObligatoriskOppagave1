@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ObligatoriskOppagave1
 {
-    internal class Lån
+    public class Lån
     {
         public ILåner Låner { get; set; }
         public Bok Bok { get; set; }

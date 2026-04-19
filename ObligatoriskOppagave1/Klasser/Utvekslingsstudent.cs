@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ObligatoriskOppagave1
 {
-    internal class Utvekslingsstudent : Student
+    public class Utvekslingsstudent : Student
     {
         public string Land { get; set; }
         public string HjemUniversitet { get; set; }

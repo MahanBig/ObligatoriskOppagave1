@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ObligatoriskOppagave1
 {
-    internal class Student : Bruker
+    public class Student : Bruker
     {
         public List<Kurs> PåmeldteKurs { get; set; } = new List<Kurs>();
         public Dictionary<string, string> Karakterer { get; set; } = new Dictionary<string, string>();

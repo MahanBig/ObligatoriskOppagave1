@@ -2,14 +2,14 @@
 
 namespace ObligatoriskOppagave1
 {
-    enum BrukerRolle { 
+    public enum BrukerRolle { 
         Student, 
         Faglærer, 
-        Bibliotekar
+        Bibliotekar 
     }
    
 
-    internal abstract class Bruker : ILåner
+    public abstract class Bruker : ILåner
     {
         public int Id { get; set; }
         public string Navn { get; set; }

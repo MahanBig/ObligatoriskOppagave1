@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ObligatoriskOppagave1
 {
-    internal class Kurs
+    public class Kurs
     {
         public string KursNavn { get; set; }
         public string KursKode { get; set; }

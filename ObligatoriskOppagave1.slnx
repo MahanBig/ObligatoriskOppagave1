@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="ObligatoriskOppagave1/ObligatoriskOppagave1.csproj" />
+  <Project Path="ObligatoriskOppgaveTest/ObligatoriskOppgaveTest.csproj" Id="a7cb1c51-1323-4323-bd7f-8962089a1b98" />
 </Solution>
